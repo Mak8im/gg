@@ -1,52 +1,82 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Кнопка с музыкой</title>
+    <title>Random Music Button</title>
     <style>
+        /* Стили для кнопки на весь экран */
         body {
             margin: 0;
             padding: 0;
             height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background-color: #000;
+            overflow: hidden;
         }
         
-        .button {
+        button {
             width: 100%;
             height: 100%;
             border: none;
             background-color: #ff4444;
             color: white;
-            font-size: 48px;
+            font-size: 24px;
             cursor: pointer;
             transition: background-color 0.3s;
         }
         
-        .button:hover {
+        button:hover {
             background-color: #ff6666;
         }
     </style>
 </head>
 <body>
-    <button class="button" onclick="playMusic()">НАЖМИ МЕНЯ</button>
+    <button id="playButton">Нажми меня!</button>
 
-    <audio id="music" loop>
+    <!-- Аудио элементы -->
+    <audio id="audio1" loop>
         <source src="music.mp3" type="audio/mpeg">
-        Ваш браузер не поддерживает аудио элемент.
+    </audio>
+    <audio id="audio2" loop>
+        <source src="music1.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="audio3" loop>
+        <source src="music2.mp3" type="audio/mpeg">
     </audio>
 
     <script>
-        function playMusic() {
-            var audio = document.getElementById("music");
-            audio.volume = 1.0; // Устанавливает максимальную громкость
-            audio.play();
-            // Скрываем кнопку после нажатия
-            document.querySelector('.button').style.display = 'none';
+        // Получаем элементы
+        const button = document.getElementById('playButton');
+        const audio1 = document.getElementById('audio1');
+        const audio2 = document.getElementById('audio2');
+        const audio3 = document.getElementById('audio3');
+        
+        // Массив с аудио элементами
+        const audioFiles = [audio1, audio2, audio3];
+
+        // Функция для воспроизведения случайного звука
+        function playRandomSound() {
+            // Останавливаем все текущие звуки
+            audioFiles.forEach(audio => {
+                audio.pause();
+                audio.currentTime = 0;
+            });
+
+            // Выбираем случайный индекс
+            const randomIndex = Math.floor(Math.random() * audioFiles.length);
+            
+            // Устанавливаем максимальную громкость и воспроизводим
+            audioFiles[randomIndex].volume = 1.0;
+            audioFiles[randomIndex].play();
         }
+
+        // Автоматическое нажатие кнопки через 0.1 секунду
+        setTimeout(() => {
+            button.click();
+        }, 100);
+
+        // Обработчик события для кнопки
+        button.addEventListener('click', () => {
+            playRandomSound();
+            button.textContent = 'Слушай музыку!';
+        });
     </script>
 </body>
 </html>
