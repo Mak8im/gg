@@ -3,21 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Автовоспроизведение музыки</title>
+    <title>Кнопка с музыкой</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #000;
+        }
+        
+        .button {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background-color: #ff4444;
+            color: white;
+            font-size: 48px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .button:hover {
+            background-color: #ff6666;
+        }
+    </style>
 </head>
 <body>
-    <audio id="background-music" autoplay loop>
+    <button class="button" onclick="playMusic()">НАЖМИ МЕНЯ</button>
+
+    <audio id="music" loop>
         <source src="music.mp3" type="audio/mpeg">
-        Ваш браузер не поддерживает аудио.
+        Ваш браузер не поддерживает аудио элемент.
     </audio>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            let audio = document.getElementById('background-music');
-            audio.play().catch(error => {
-                console.log('Автовоспроизведение заблокировано браузером. Требуется пользовательское действие.');
-            });
-        });
+        function playMusic() {
+            var audio = document.getElementById("music");
+            audio.volume = 1.0; // Устанавливает максимальную громкость
+            audio.play();
+            // Скрываем кнопку после нажатия
+            document.querySelector('.button').style.display = 'none';
+        }
     </script>
 </body>
 </html>
