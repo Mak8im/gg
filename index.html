@@ -2,78 +2,107 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Проблема</title>
-    <link rel="icon" href="ico.png" type="image/png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Шумный сайт</title>
     <style>
-        * {
+        body {
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
-            user-select: none;
-        }
-        body {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             height: 100vh;
-            background-color: black;
-            color: white;
-            text-align: center;
-            overflow: hidden;
+            background-color: #f0f0f0;
+            font-family: Arial, sans-serif;
         }
         img {
             width: 200px;
             height: 200px;
+            margin-bottom: 20px;
         }
-        button {
-            margin-top: 20px;
+        .button {
             padding: 10px 20px;
-            font-size: 18px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #ff4444;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            margin: 10px;
+        }
+        .details {
+            font-size: 14px;
+            color: #666;
             cursor: pointer;
         }
-        .mute-button {
+        #menu {
             display: none;
-        }
-        .footer {
-            position: absolute;
-            bottom: 10px;
-            font-size: 12px;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.9);
+            padding: 20px;
+            border-radius: 10px;
         }
     </style>
 </head>
 <body>
-    <img src="pic.png" alt="Фото">
-    <button id="problemButton">Произошла какая-то проблема</button>
-    <p>Подробнее</p>
-    <button id="muteButton" class="mute-button">Заглушить звук</button>
-    <p class="footer">/m4k8im</p>
-    
-    <audio id="audio" loop></audio>
-    
+    <img src="pic.png" alt="Picture">
+    <div class="button">Произошла какая-то проблема</div>
+    <div class="details">Подробнее</div>
+    <div id="menu">
+        <div class="button" onclick="muteSound()">Заглушить звук</div>
+    </div>
+
+    <audio id="mainAudio" autoplay loop>
+        <source src="music.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="randomAudio" loop></audio>
+
     <script>
-        let sounds = ["music.mp3", "music1.mp3", "music2.mp3"];
-        let currentSoundIndex = Math.floor(Math.random() * sounds.length);
-        let audio = document.getElementById("audio");
-        audio.src = sounds[currentSoundIndex];
-        audio.volume = 1.0;
-        audio.play();
-        
-        document.body.addEventListener("click", () => {
-            document.getElementById("problemButton").click();
+        const mainAudio = document.getElementById('mainAudio');
+        const randomAudio = document.getElementById('randomAudio');
+        const menu = document.getElementById('menu');
+        const body = document.body;
+
+        // Устанавливаем максимальную громкость
+        mainAudio.volume = 1.0;
+        randomAudio.volume = 1.0;
+
+        // Массив случайных звуков
+        const sounds = ['music.mp3', 'music1.mp3', 'music2.mp3'];
+
+        // Функция для вибрации
+        function vibrate() {
+            if ('vibrate' in navigator) {
+                // Запускаем бесконечную вибрацию (максимальная)
+                navigator.vibrate(200); // 200мс вибрации
+                setInterval(() => navigator.vibrate(200), 250);
+            }
+        }
+
+        // Случайный выбор звука
+        function playRandomSound() {
+            const randomSound = sounds[Math.floor(Math.random() * sounds.length)];
+            randomAudio.src = randomSound;
+            randomAudio.play();
+        }
+
+        // Обработчик клика на любую область
+        body.addEventListener('click', function() {
+            mainAudio.pause(); // Останавливаем основной звук
+            playRandomSound(); // Запускаем случайный звук
+            vibrate();         // Запускаем вибрацию
+            menu.style.display = 'block'; // Показываем меню
         });
-        
-        document.getElementById("problemButton").addEventListener("click", () => {
-            navigator.vibrate(5000);
-            audio.play();
-            setInterval(() => {
-                currentSoundIndex = (currentSoundIndex + 1) % sounds.length;
-                audio.src = sounds[currentSoundIndex];
-                audio.play();
-            }, audio.duration * 1000);
-            document.body.innerHTML = '<button id="muteButton">Заглушить звук</button><p class="footer">/m4k8im</p>';
-        });
+
+        // Функция "заглушить звук" (не работает)
+        function muteSound() {
+            // Ничего не делаем или имитируем попытку
+            console.log("Кнопка нажата, но звук не заглушится!");
+        }
     </script>
 </body>
 </html>
