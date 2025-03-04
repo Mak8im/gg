@@ -26,6 +26,11 @@
             border: none;
             border-radius: 5px;
         }
+        #details {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #333;
+        }
         #muteMenu {
             display: none;
             position: fixed;
@@ -58,6 +63,7 @@
 <body>
     <img src="pic.png" alt="Image" width="200" height="200">
     <button id="problemBtn">Произошла какая-то проблема</button>
+    <div id="details">Подробнее</div>
     <div id="muteMenu">
         <button id="muteBtn">Заглушить звук</button>
     </div>
@@ -117,9 +123,10 @@
                 // Показать меню с кнопкой "заглушить"
                 muteMenu.style.display = 'flex';
                 
-                // Скрыть исходную кнопку и картинку
+                // Скрыть исходную кнопку, картинку и текст "Подробнее"
                 problemBtn.style.display = 'none';
                 document.querySelector('img').style.display = 'none';
+                document.getElementById('details').style.display = 'none';
                 
                 isFirstClick = false;
             }
