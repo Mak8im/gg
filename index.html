@@ -2,151 +2,77 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Problem Site</title>
-    <link rel="icon" type="image/png" href="ico.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Проблема</title>
+    <link rel="icon" href="ico.png" type="image/png">
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
         body {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             height: 100vh;
-            margin: 0;
-            background-color: #f0f0f0;
-            font-family: Arial, sans-serif;
-            overflow: hidden; /* Запрещаем прокрутку */
-            touch-action: none; /* Запрещаем жесты на сенсорных устройствах */
+            background-color: black;
+            color: white;
+            text-align: center;
+            overflow: hidden;
         }
-        #problemBtn {
+        img {
+            width: 200px;
+            height: 200px;
+        }
+        button {
             margin-top: 20px;
             padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-            background-color: #ff4444;
-            color: white;
-            border: none;
-            border-radius: 5px;
-        }
-        #details {
-            margin-top: 10px;
-            font-size: 14px;
-            color: #333;
-        }
-        #muteMenu {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.9);
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-        #muteBtn {
-            padding: 15px 30px;
             font-size: 18px;
-            background-color: #444;
-            color: white;
-            border: none;
-            border-radius: 5px;
             cursor: pointer;
         }
-        #footer {
-            position: fixed;
+        .mute-button {
+            display: none;
+        }
+        .footer {
+            position: absolute;
             bottom: 10px;
-            font-size: 14px;
-            color: #666;
+            font-size: 12px;
         }
     </style>
 </head>
 <body>
-    <img src="pic.png" alt="Image" width="200" height="200">
-    <button id="problemBtn">Произошла какая-то проблема</button>
-    <div id="details">Подробнее</div>
-    <div id="muteMenu">
-        <button id="muteBtn">Заглушить звук</button>
-    </div>
-    <div id="footer">/m4k8im</div>
-
-    <audio id="screamAudio"></audio>
-
+    <img src="pic.png" alt="Фото">
+    <button id="problemButton">Произошла какая-то проблема</button>
+    <p>Подробнее</p>
+    <button id="muteButton" class="mute-button">Заглушить звук</button>
+    <p class="footer">/m4k8im</p>
+    
+    <audio id="audio" loop></audio>
+    
     <script>
-        const problemBtn = document.getElementById('problemBtn');
-        const muteMenu = document.getElementById('muteMenu');
-        const muteBtn = document.getElementById('muteBtn');
-        const audio = document.getElementById('screamAudio');
-        const sounds = ['music.mp3', 'music1.mp3', 'music2.mp3'];
-        let isFirstClick = true;
-
-        // Функция для выбора случайного звука
-        function getRandomSound(currentSound) {
-            let newSound;
-            do {
-                const randomIndex = Math.floor(Math.random() * sounds.length);
-                newSound = sounds[randomIndex];
-            } while (newSound === currentSound); // Убеждаемся, что звук отличается от текущего
-            return newSound;
-        }
-
-        // Функция вибрации
-        function vibratePhone() {
-            if ('vibrate' in navigator) {
-                window.navigator.vibrate(200);
-                setInterval(() => {
-                    window.navigator.vibrate(200);
-                }, 250);
-            }
-        }
-
-        // Функция для воспроизведения следующего звука
-        function playNextSound() {
-            audio.src = getRandomSound(audio.src.split('/').pop());
+        let sounds = ["music.mp3", "music1.mp3", "music2.mp3"];
+        let currentSoundIndex = Math.floor(Math.random() * sounds.length);
+        let audio = document.getElementById("audio");
+        audio.src = sounds[currentSoundIndex];
+        audio.volume = 1.0;
+        audio.play();
+        
+        document.body.addEventListener("click", () => {
+            document.getElementById("problemButton").click();
+        });
+        
+        document.getElementById("problemButton").addEventListener("click", () => {
+            navigator.vibrate(5000);
             audio.play();
-        }
-
-        // Начало воспроизведения музыки при загрузке страницы
-        window.addEventListener('load', function() {
-            audio.src = getRandomSound('');
-            audio.volume = 1.0; // Максимальная громкость
-            audio.play().catch(error => {
-                console.log("Автовоспроизведение заблокировано браузером:", error);
-            });
-        });
-
-        // Обработчик клика по всему документу
-        document.addEventListener('click', function(e) {
-            if (isFirstClick) {
-                // Запуск вибрации
-                vibratePhone();
-                
-                // Показать меню с кнопкой "заглушить"
-                muteMenu.style.display = 'flex';
-                
-                // Скрыть исходную кнопку, картинку и текст "Подробнее"
-                problemBtn.style.display = 'none';
-                document.querySelector('img').style.display = 'none';
-                document.getElementById('details').style.display = 'none';
-                
-                isFirstClick = false;
-            }
-            // Клики после первого не влияют на звук
-        });
-
-        // Когда звук заканчивается, запускаем следующий
-        audio.addEventListener('ended', playNextSound);
-
-        // Кнопка "заглушить" ничего не делает
-        muteBtn.addEventListener('click', function(e) {
-            e.stopPropagation(); // Предотвращаем срабатывание клика по документу
-            // Пустой обработчик - звук не выключается
-        });
-
-        // Предотвращаем срабатывание клика по второму меню
-        muteMenu.addEventListener('click', function(e) {
-            e.stopPropagation(); // Останавливаем всплытие события клика
+            setInterval(() => {
+                currentSoundIndex = (currentSoundIndex + 1) % sounds.length;
+                audio.src = sounds[currentSoundIndex];
+                audio.play();
+            }, audio.duration * 1000);
+            document.body.innerHTML = '<button id="muteButton">Заглушить звук</button><p class="footer">/m4k8im</p>';
         });
     </script>
 </body>
