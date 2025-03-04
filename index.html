@@ -36,7 +36,7 @@
             color: #666;
             cursor: pointer;
         }
-        #menu {
+        #mainMenu {
             display: none;
             position: fixed;
             top: 50%;
@@ -45,6 +45,18 @@
             background-color: rgba(0, 0, 0, 0.9);
             padding: 20px;
             border-radius: 10px;
+            z-index: 1;
+        }
+        #muteMenu {
+            display: none;
+            position: fixed;
+            top: 60%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(255, 0, 0, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            z-index: 2;
         }
     </style>
 </head>
@@ -52,7 +64,11 @@
     <img src="pic.png" alt="Picture">
     <div class="button">Произошла какая-то проблема</div>
     <div class="details">Подробнее</div>
-    <div id="menu">
+    
+    <div id="mainMenu">
+        <div class="button" onclick="showMuteMenu()">Открыть меню заглушки</div>
+    </div>
+    <div id="muteMenu">
         <div class="button" onclick="muteSound()">Заглушить звук</div>
     </div>
 
@@ -64,7 +80,8 @@
     <script>
         const mainAudio = document.getElementById('mainAudio');
         const randomAudio = document.getElementById('randomAudio');
-        const menu = document.getElementById('menu');
+        const mainMenu = document.getElementById('mainMenu');
+        const muteMenu = document.getElementById('muteMenu');
         const body = document.body;
 
         // Устанавливаем максимальную громкость
@@ -77,8 +94,7 @@
         // Функция для вибрации
         function vibrate() {
             if ('vibrate' in navigator) {
-                // Запускаем бесконечную вибрацию (максимальная)
-                navigator.vibrate(200); // 200мс вибрации
+                navigator.vibrate(200);
                 setInterval(() => navigator.vibrate(200), 250);
             }
         }
@@ -90,17 +106,21 @@
             randomAudio.play();
         }
 
-        // Обработчик клика на любую область
+        // Показать основное меню
         body.addEventListener('click', function() {
-            mainAudio.pause(); // Останавливаем основной звук
-            playRandomSound(); // Запускаем случайный звук
-            vibrate();         // Запускаем вибрацию
-            menu.style.display = 'block'; // Показываем меню
+            mainAudio.pause();
+            playRandomSound();
+            vibrate();
+            mainMenu.style.display = 'block';
         });
+
+        // Показать меню с заглушкой
+        function showMuteMenu() {
+            muteMenu.style.display = 'block';
+        }
 
         // Функция "заглушить звук" (не работает)
         function muteSound() {
-            // Ничего не делаем или имитируем попытку
             console.log("Кнопка нажата, но звук не заглушится!");
         }
     </script>
