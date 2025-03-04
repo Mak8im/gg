@@ -1,81 +1,106 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
-    <title>Random Music Button</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>kakaski</title>
     <style>
-        /* Стили для кнопки на весь экран */
         body {
-            margin: 0;
-            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
             height: 100vh;
-            overflow: hidden;
+            margin: 0;
+            background-color: #f0f0f0;
+            font-family: Arial, sans-serif;
         }
-        
-        button {
+        #problemBtn {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #ff4444;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        #muteMenu {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
-            border: none;
-            background-color: #000000;
-            color: white;
-            font-size: 24px;
-            cursor: pointer;
-            transition: background-color 0.3s;
+            background-color: rgba(0, 0, 0, 0.9);
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
         }
-        
-        button:hover {
-            background-color: #000000;
+        #muteBtn {
+            padding: 15px 30px;
+            font-size: 18px;
+            background-color: #444;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
-    <button id="playButton">kakashki</button>
+    <img src="pic.png" alt="Image" width="200" height="200">
+    <button id="problemBtn">Произошла какая-то проблема</button>
+    <div id="muteMenu">
+        <button id="muteBtn">Заглушить звук</button>
+    </div>
 
-    <!-- Аудио элементы -->
-    <audio id="audio1" loop>
-        <source src="music.mp3" type="audio/mpeg">
-    </audio>
-    <audio id="audio2" loop>
-        <source src="music1.mp3" type="audio/mpeg">
-    </audio>
-    <audio id="audio3" loop>
-        <source src="music2.mp3" type="audio/mpeg">
-    </audio>
+    <audio id="screamAudio" loop></audio>
 
     <script>
-        // Получаем элементы
-        const button = document.getElementById('playButton');
-        const audio1 = document.getElementById('audio1');
-        const audio2 = document.getElementById('audio2');
-        const audio3 = document.getElementById('audio3');
-        
-        // Массив с аудио элементами
-        const audioFiles = [audio1, audio2, audio3];
+        const problemBtn = document.getElementById('problemBtn');
+        const muteMenu = document.getElementById('muteMenu');
+        const muteBtn = document.getElementById('muteBtn');
+        const audio = document.getElementById('screamAudio');
+        const sounds = ['music.mp3', 'music1.mp3', 'music2.mp3'];
 
-        // Функция для воспроизведения случайного звука
-        function playRandomSound() {
-            // Останавливаем все текущие звуки
-            audioFiles.forEach(audio => {
-                audio.pause();
-                audio.currentTime = 0;
-            });
-
-            // Выбираем случайный индекс
-            const randomIndex = Math.floor(Math.random() * audioFiles.length);
-            
-            // Устанавливаем максимальную громкость и воспроизводим
-            audioFiles[randomIndex].volume = 1.0;
-            audioFiles[randomIndex].play();
+        // Функция для выбора случайного звука
+        function getRandomSound() {
+            const randomIndex = Math.floor(Math.random() * sounds.length);
+            return sounds[randomIndex];
         }
 
-        // Автоматическое нажатие кнопки через 0.1 секунду
-        setTimeout(() => {
-            button.click();
-        }, 100);
+        // Функция вибрации
+        function vibratePhone() {
+            if ('vibrate' in navigator) {
+                // Максимальная вибрация в бесконечном цикле
+                window.navigator.vibrate(200); // 200ms вибрация
+                setInterval(() => {
+                    window.navigator.vibrate(200);
+                }, 250);
+            }
+        }
 
-        // Обработчик события для кнопки
-        button.addEventListener('click', () => {
-            playRandomSound();
-            button.textContent = 'kakashki';
+        // Обработчик клика по всему документу
+        document.addEventListener('click', function() {
+            // Запуск случайного звука
+            audio.src = getRandomSound();
+            audio.play();
+            
+            // Запуск вибрации
+            vibratePhone();
+            
+            // Показать меню с кнопкой "заглушить"
+            muteMenu.style.display = 'flex';
+            
+            // Скрыть исходную кнопку и картинку
+            problemBtn.style.display = 'none';
+            document.querySelector('img').style.display = 'none';
+        });
+
+        // Кнопка "заглушить" ничего не делает
+        muteBtn.addEventListener('click', function() {
+            // Пустой обработчик - звук не выключается
         });
     </script>
 </body>
