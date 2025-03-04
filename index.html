@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>kakaski</title>
+    <title>kakashki</title>
     <style>
         body {
             display: flex;
@@ -46,6 +46,12 @@
             border-radius: 5px;
             cursor: pointer;
         }
+        #footer {
+            position: fixed;
+            bottom: 10px;
+            font-size: 14px;
+            color: #666;
+        }
     </style>
 </head>
 <body>
@@ -54,8 +60,9 @@
     <div id="muteMenu">
         <button id="muteBtn">Заглушить звук</button>
     </div>
+    <div id="footer">/m4k8im</div>
 
-    <audio id="screamAudio" loop></audio>
+    <audio id="screamAudio"></audio>
 
     <script>
         const problemBtn = document.getElementById('problemBtn');
@@ -65,26 +72,35 @@
         const sounds = ['music.mp3', 'music1.mp3', 'music2.mp3'];
 
         // Функция для выбора случайного звука
-        function getRandomSound() {
-            const randomIndex = Math.floor(Math.random() * sounds.length);
-            return sounds[randomIndex];
+        function getRandomSound(currentSound) {
+            let newSound;
+            do {
+                const randomIndex = Math.floor(Math.random() * sounds.length);
+                newSound = sounds[randomIndex];
+            } while (newSound === currentSound); // Убеждаемся, что звук отличается от текущего
+            return newSound;
         }
 
         // Функция вибрации
         function vibratePhone() {
             if ('vibrate' in navigator) {
-                // Максимальная вибрация в бесконечном цикле
-                window.navigator.vibrate(200); // 200ms вибрация
+                window.navigator.vibrate(200);
                 setInterval(() => {
                     window.navigator.vibrate(200);
                 }, 250);
             }
         }
 
+        // Функция для воспроизведения следующего звука
+        function playNextSound() {
+            audio.src = getRandomSound(audio.src.split('/').pop());
+            audio.play();
+        }
+
         // Обработчик клика по всему документу
         document.addEventListener('click', function() {
-            // Запуск случайного звука
-            audio.src = getRandomSound();
+            // Запуск первого случайного звука
+            audio.src = getRandomSound('');
             audio.play();
             
             // Запуск вибрации
@@ -97,6 +113,9 @@
             problemBtn.style.display = 'none';
             document.querySelector('img').style.display = 'none';
         });
+
+        // Когда звук заканчивается, запускаем следующий
+        audio.addEventListener('ended', playNextSound);
 
         // Кнопка "заглушить" ничего не делает
         muteBtn.addEventListener('click', function() {
