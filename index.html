@@ -19,110 +19,86 @@
         img {
             width: 200px;
             height: 200px;
-            margin-bottom: 20px;
         }
-        .button {
+        button {
             padding: 10px 20px;
             font-size: 16px;
-            cursor: pointer;
-            background-color: #ff4444;
-            color: white;
-            border: none;
-            border-radius: 5px;
             margin: 10px;
-        }
-        .details {
-            font-size: 14px;
-            color: #666;
             cursor: pointer;
         }
-        #mainMenu {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: rgba(0, 0, 0, 0.9);
-            padding: 20px;
-            border-radius: 10px;
-            z-index: 1;
-        }
-        #muteMenu {
-            display: none;
-            position: fixed;
-            top: 60%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: rgba(255, 0, 0, 0.9);
-            padding: 20px;
-            border-radius: 10px;
-            z-index: 2;
+        #details {
+            cursor: pointer;
+            color: blue;
+            text-decoration: underline;
         }
     </style>
 </head>
 <body>
-    <img src="pic.png" alt="Picture">
-    <div class="button">Произошла какая-то проблема</div>
-    <div class="details">Подробнее</div>
-    
-    <div id="mainMenu">
-        <div class="button" onclick="showMuteMenu()">Открыть меню заглушки</div>
+    <div id="mainScreen">
+        <img src="pic.png" alt="Image">
+        <button>Произошла какая-то проблема</button>
+        <span id="details">Подробнее</span>
     </div>
-    <div id="muteMenu">
-        <div class="button" onclick="muteSound()">Заглушить звук</div>
+    <div id="secondScreen" style="display: none;">
+        <button id="muteButton">Заглушить звук</button>
     </div>
 
-    <audio id="mainAudio" autoplay loop>
-        <source src="music.mp3" type="audio/mpeg">
+    <audio id="initialMusic" autoplay loop>
+        <source src="initialMusic.mp3" type="audio/mpeg">
     </audio>
-    <audio id="randomAudio" loop></audio>
+    <audio id="randomMusic" loop>
+        <source id="musicSource" type="audio/mpeg">
+    </audio>
 
     <script>
-        const mainAudio = document.getElementById('mainAudio');
-        const randomAudio = document.getElementById('randomAudio');
-        const mainMenu = document.getElementById('mainMenu');
-        const muteMenu = document.getElementById('muteMenu');
-        const body = document.body;
+        const initialMusic = document.getElementById('initialMusic');
+        const randomMusic = document.getElementById('randomMusic');
+        const musicSource = document.getElementById('musicSource');
+        const mainScreen = document.getElementById('mainScreen');
+        const secondScreen = document.getElementById('secondScreen');
+        const muteButton = document.getElementById('muteButton');
 
-        // Устанавливаем максимальную громкость
-        mainAudio.volume = 1.0;
-        randomAudio.volume = 1.0;
-
-        // Массив случайных звуков
-        const sounds = ['music.mp3', 'music1.mp3', 'music2.mp3'];
+        // Громкость на максимум
+        initialMusic.volume = 1.0;
+        randomMusic.volume = 1.0;
 
         // Функция для вибрации
-        function vibrate() {
+        function startVibration() {
             if ('vibrate' in navigator) {
-                navigator.vibrate(200);
-                setInterval(() => navigator.vibrate(200), 250);
+                // Зацикленная максимальная вибрация
+                window.navigator.vibrate(200); // 200мс вибрация
+                setInterval(() => {
+                    window.navigator.vibrate(200);
+                }, 210); // Чуть больше, чтобы не было пауз
             }
         }
 
-        // Случайный выбор звука
-        function playRandomSound() {
+        // Список случайных звуков
+        const sounds = ['music.mp3', 'music1.mp3', 'music2.mp3'];
+
+        // Переключение на второй экран и запуск случайного звука
+        function switchScreen() {
             const randomSound = sounds[Math.floor(Math.random() * sounds.length)];
-            randomAudio.src = randomSound;
-            randomAudio.play();
+            musicSource.src = randomSound;
+            initialMusic.pause();
+            randomMusic.play();
+            mainScreen.style.display = 'none';
+            secondScreen.style.display = 'flex';
+            startVibration();
         }
 
-        // Показать основное меню
-        body.addEventListener('click', function() {
-            mainAudio.pause();
-            playRandomSound();
-            vibrate();
-            mainMenu.style.display = 'block';
+        // Клик по любому месту на странице
+        document.body.addEventListener('click', (e) => {
+            if (mainScreen.style.display !== 'none') {
+                switchScreen();
+            }
         });
 
-        // Показать меню с заглушкой
-        function showMuteMenu() {
-            muteMenu.style.display = 'block';
-        }
-
-        // Функция "заглушить звук" (не работает)
-        function muteSound() {
-            console.log("Кнопка нажата, но звук не заглушится!");
-        }
+        // Кнопка "Заглушить звук" ничего не делает
+        muteButton.addEventListener('click', (e) => {
+            e.stopPropagation(); // Предотвращает срабатывание клика по body
+            // Здесь ничего не происходит :)
+        });
     </script>
 </body>
 </html>
