@@ -2,6 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Шумный сайт</title>
     <style>
         body {
@@ -14,97 +15,129 @@
             height: 100vh;
             background-color: #f0f0f0;
             font-family: Arial, sans-serif;
+            overflow: hidden;
         }
+
+        .main-container {
+            text-align: center;
+        }
+
         .image {
             width: 200px;
             height: 200px;
             border-radius: 20px;
             margin-bottom: 20px;
         }
-        .button {
+
+        .problem-btn {
             padding: 10px 20px;
             font-size: 16px;
-            cursor: pointer;
             background-color: #ff4444;
             color: white;
             border: none;
-            border-radius: 5px;
-            margin-bottom: 10px;
+            border-radius: 10px;
+            cursor: pointer;
         }
+
         .details {
+            margin-top: 10px;
             font-size: 14px;
             color: #666;
             cursor: pointer;
         }
-        .new-page {
+
+        .second-screen {
             display: none;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
+            text-align: center;
+        }
+
+        .mute-btn {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #444;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        /* Адаптация под телефон */
+        @media (max-width: 600px) {
+            .image {
+                width: 150px;
+                height: 150px;
+            }
+
+            .problem-btn {
+                font-size: 14px;
+                padding: 8px 16px;
+            }
+
+            .details {
+                font-size: 12px;
+            }
+
+            .mute-btn {
+                font-size: 14px;
+                padding: 8px 16px;
+            }
         }
     </style>
 </head>
 <body>
-    <audio id="mainAudio" autoplay></audio>
-    <audio id="screamAudio"></audio>
-    
-    <div id="mainContent">
+    <div class="main-container" id="mainScreen">
         <img src="pic.png" alt="Picture" class="image">
-        <button class="button">Произошла какая-то проблема</button>
-        <div class="details" onclick="switchContent()">Подробнее</div>
+        <button class="problem-btn">Произошла какая-то проблема</button>
+        <div class="details" id="details">Подробнее</div>
     </div>
 
-    <div id="newPage" class="new-page">
-        <button class="button" onclick="doNothing()">Заглушить звук</button>
+    <div class="second-screen" id="secondScreen">
+        <button class="mute-btn" id="muteBtn">Заглушить звук</button>
     </div>
+
+    <audio id="audioPlayer" loop></audio>
 
     <script>
-        const audioFiles = ['music.mp3', 'music1.mp3', 'music2.mp3'];
-        const mainAudio = document.getElementById('mainAudio');
-        const screamAudio = document.getElementById('screamAudio');
+        const audioPlayer = document.getElementById('audioPlayer');
+        const mainScreen = document.getElementById('mainScreen');
+        const secondScreen = document.getElementById('secondScreen');
+        const details = document.getElementById('details');
+        const muteBtn = document.getElementById('muteBtn');
+
+        const tracks = ['music.mp3', 'music1.mp3', 'music2.mp3'];
         
-        // Запуск случайной музыки при загрузке
-        function playInitialMusic() {
-            const randomTrack = audioFiles[Math.floor(Math.random() * audioFiles.length)];
-            mainAudio.src = randomTrack;
-            mainAudio.play();
+        // Функция для выбора случайного трека
+        function getRandomTrack() {
+            const randomIndex = Math.floor(Math.random() * tracks.length);
+            return tracks[randomIndex];
         }
 
-        // Случайный зацикленный звук
-        function playRandomScream() {
-            const randomTrack = audioFiles[Math.floor(Math.random() * audioFiles.length)];
-            screamAudio.src = randomTrack;
-            screamAudio.loop = true;
-            screamAudio.play();
-
-            screamAudio.onended = function() {
-                playRandomScream(); // Переключение на новый случайный трек
-            };
-        }
-
-        // Переключение контента
-        function switchContent() {
-            document.getElementById('mainContent').style.display = 'none';
-            document.getElementById('newPage').style.display = 'flex';
-            mainAudio.pause();
-            playRandomScream();
-        }
-
-        // Пустая функция для кнопки "Заглушить звук"
-        function doNothing() {
-            // Ничего не делаем
-        }
-
-        // Клик в любом месте вызывает switchContent
-        document.body.onclick = function(event) {
-            if (event.target.className !== 'button' && event.target.className !== 'details') {
-                switchContent();
-            }
+        // Запуск музыки при загрузке страницы
+        window.onload = () => {
+            audioPlayer.src = getRandomTrack();
+            audioPlayer.volume = 1.0;
+            audioPlayer.play();
         };
 
-        // Старт музыки при загрузке
-        window.onload = playInitialMusic;
+        // Переключение трека при окончании
+        audioPlayer.onended = () => {
+            audioPlayer.src = getRandomTrack();
+            audioPlayer.play();
+        };
+
+        // Переход на второй экран при клике куда угодно
+        document.body.addEventListener('click', () => {
+            mainScreen.style.display = 'none';
+            secondScreen.style.display = 'block';
+            audioPlayer.src = getRandomTrack();
+            audioPlayer.play();
+        });
+
+        // Бесполезная кнопка заглушения
+        muteBtn.addEventListener('click', (e) => {
+            e.stopPropagation(); // Чтобы не срабатывал клик по body
+            // Ничего не делаем, кнопка бесполезна
+        });
     </script>
 </body>
 </html>
