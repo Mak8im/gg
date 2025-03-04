@@ -2,7 +2,6 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Шумный сайт</title>
     <style>
         body {
@@ -16,89 +15,96 @@
             background-color: #f0f0f0;
             font-family: Arial, sans-serif;
         }
-        img {
+        .image {
             width: 200px;
             height: 200px;
+            border-radius: 20px;
+            margin-bottom: 20px;
         }
-        button {
+        .button {
             padding: 10px 20px;
             font-size: 16px;
-            margin: 10px;
+            cursor: pointer;
+            background-color: #ff4444;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        .details {
+            font-size: 14px;
+            color: #666;
             cursor: pointer;
         }
-        #details {
-            cursor: pointer;
-            color: blue;
-            text-decoration: underline;
+        .new-page {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
         }
     </style>
 </head>
 <body>
-    <div id="mainScreen">
-        <img src="pic.png" alt="Image">
-        <button>Произошла какая-то проблема</button>
-        <span id="details">Подробнее</span>
-    </div>
-    <div id="secondScreen" style="display: none;">
-        <button id="muteButton">Заглушить звук</button>
+    <audio id="mainAudio" autoplay></audio>
+    <audio id="screamAudio"></audio>
+    
+    <div id="mainContent">
+        <img src="pic.png" alt="Picture" class="image">
+        <button class="button">Произошла какая-то проблема</button>
+        <div class="details" onclick="switchContent()">Подробнее</div>
     </div>
 
-    <audio id="initialMusic" autoplay loop>
-        <source src="initialMusic.mp3" type="audio/mpeg">
-    </audio>
-    <audio id="randomMusic" loop>
-        <source id="musicSource" type="audio/mpeg">
-    </audio>
+    <div id="newPage" class="new-page">
+        <button class="button" onclick="doNothing()">Заглушить звук</button>
+    </div>
 
     <script>
-        const initialMusic = document.getElementById('initialMusic');
-        const randomMusic = document.getElementById('randomMusic');
-        const musicSource = document.getElementById('musicSource');
-        const mainScreen = document.getElementById('mainScreen');
-        const secondScreen = document.getElementById('secondScreen');
-        const muteButton = document.getElementById('muteButton');
-
-        // Громкость на максимум
-        initialMusic.volume = 1.0;
-        randomMusic.volume = 1.0;
-
-        // Функция для вибрации
-        function startVibration() {
-            if ('vibrate' in navigator) {
-                // Зацикленная максимальная вибрация
-                window.navigator.vibrate(200); // 200мс вибрация
-                setInterval(() => {
-                    window.navigator.vibrate(200);
-                }, 210); // Чуть больше, чтобы не было пауз
-            }
+        const audioFiles = ['music.mp3', 'music1.mp3', 'music2.mp3'];
+        const mainAudio = document.getElementById('mainAudio');
+        const screamAudio = document.getElementById('screamAudio');
+        
+        // Запуск случайной музыки при загрузке
+        function playInitialMusic() {
+            const randomTrack = audioFiles[Math.floor(Math.random() * audioFiles.length)];
+            mainAudio.src = randomTrack;
+            mainAudio.play();
         }
 
-        // Список случайных звуков
-        const sounds = ['music.mp3', 'music1.mp3', 'music2.mp3'];
+        // Случайный зацикленный звук
+        function playRandomScream() {
+            const randomTrack = audioFiles[Math.floor(Math.random() * audioFiles.length)];
+            screamAudio.src = randomTrack;
+            screamAudio.loop = true;
+            screamAudio.play();
 
-        // Переключение на второй экран и запуск случайного звука
-        function switchScreen() {
-            const randomSound = sounds[Math.floor(Math.random() * sounds.length)];
-            musicSource.src = randomSound;
-            initialMusic.pause();
-            randomMusic.play();
-            mainScreen.style.display = 'none';
-            secondScreen.style.display = 'flex';
-            startVibration();
+            screamAudio.onended = function() {
+                playRandomScream(); // Переключение на новый случайный трек
+            };
         }
 
-        // Клик по любому месту на странице
-        document.body.addEventListener('click', (e) => {
-            if (mainScreen.style.display !== 'none') {
-                switchScreen();
-            }
-        });
+        // Переключение контента
+        function switchContent() {
+            document.getElementById('mainContent').style.display = 'none';
+            document.getElementById('newPage').style.display = 'flex';
+            mainAudio.pause();
+            playRandomScream();
+        }
 
-        // Кнопка "Заглушить звук" ничего не делает
-        muteButton.addEventListener('click', (e) => {
-            e.stopPropagation(); // Предотвращает срабатывание клика по body
-            // Здесь ничего не происходит :)
-        });
+        // Пустая функция для кнопки "Заглушить звук"
+        function doNothing() {
+            // Ничего не делаем
+        }
+
+        // Клик в любом месте вызывает switchContent
+        document.body.onclick = function(event) {
+            if (event.target.className !== 'button' && event.target.className !== 'details') {
+                switchContent();
+            }
+        };
+
+        // Старт музыки при загрузке
+        window.onload = playInitialMusic;
     </script>
 </body>
 </html>
